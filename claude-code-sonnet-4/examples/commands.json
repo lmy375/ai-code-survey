@@ -1,0 +1,58 @@
+{
+  "commands": {
+    "add": {
+    "cmd": "echo $(($OPND1 + $OPND2))",
+    "args": {
+      "OPND1": {
+        "type": "int",
+        "description": "The first operand to add"
+      },
+      "OPND2": {
+        "type": "int",
+        "description": "The second operand to add"
+      }
+    },
+    "description": "Add two numbers"
+  },
+  "date": {
+    "cmd": "date",
+    "description": "Get current date and time"
+  },
+  "base64_encode": {
+    "cmd": "echo $TEXT | base64",
+    "args": {
+      "TEXT": {
+        "type": "string",
+        "description": "Text to encode in base64"
+      }
+    },
+    "description": "Encode text in base64"
+  },
+  "base64_decode": {
+    "cmd": "echo $ENCODED | base64 -d",
+    "args": {
+      "ENCODED": {
+        "type": "string",
+        "description": "Base64 encoded text to decode"
+      }
+    },
+    "description": "Decode base64 text"
+  },
+  "list_processes": {
+    "cmd": "ps aux",
+    "description": "List all running processes"
+  },
+  "disk_usage": {
+    "cmd": "df -h $PATH",
+    "args": {
+      "PATH": {
+        "type": "string",
+        "description": "Path to check disk usage for",
+        "optional": true,
+        "default": "/"
+      }
+    },
+    "description": "Show disk usage for a path"
+    }
+  }
+}

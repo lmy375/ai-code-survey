@@ -1,0 +1,17 @@
+ [build-system]
+ requires = ["setuptools>=42", "wheel"]
+ build-backend = "setuptools.build_meta"
+
+ [project]
+ name = "shell-mcp"
+ version = "0.1.0"
+ description = "A MCP Server tool that wraps shell commands and REPL sessions."
+ readme = "README.md"
+ requires-python = ">=3.7"
+ dependencies = [
+     "fastmcp>=0.1.0",
+     "typer>=0.7.0",
+ ]
+
+ [project.scripts]
+ shell-mcp = "shell_mcp.cli:app"

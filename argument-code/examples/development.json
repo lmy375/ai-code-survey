@@ -1,0 +1,66 @@
+{
+  "git_status": {
+    "cmd": "git status",
+    "description": "Show git repository status",
+    "timeout": 10000
+  },
+  "git_log": {
+    "cmd": "git log --oneline -n $count",
+    "description": "Show git commit history",
+    "args": {
+      "count": {
+        "type": "int",
+        "description": "Number of commits to show",
+        "optional": true,
+        "default": 10
+      }
+    },
+    "timeout": 15000
+  },
+  "npm_install": {
+    "cmd": "npm install $package",
+    "description": "Install npm package",
+    "args": {
+      "package": {
+        "type": "string",
+        "description": "Package name to install",
+        "optional": false
+      }
+    },
+    "timeout": 120000
+  },
+  "run_tests": {
+    "cmd": "npm test",
+    "description": "Run project tests",
+    "timeout": 60000
+  },
+  "build_project": {
+    "cmd": "npm run build",
+    "description": "Build the project",
+    "timeout": 120000
+  },
+  "check_syntax": {
+    "cmd": "npx eslint $file",
+    "description": "Check JavaScript/TypeScript syntax",
+    "args": {
+      "file": {
+        "type": "string",
+        "description": "File to check",
+        "optional": false
+      }
+    },
+    "timeout": 30000
+  },
+  "format_code": {
+    "cmd": "npx prettier --write $file",
+    "description": "Format code file",
+    "args": {
+      "file": {
+        "type": "string",
+        "description": "File to format",
+        "optional": false
+      }
+    },
+    "timeout": 15000
+  }
+}

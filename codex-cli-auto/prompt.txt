@@ -1,0 +1,279 @@
+<requirements>
+需要开发一款名为 shell-mcp 的 MCP Server 工具。实现将用户定义的命令、程序按一定规则转化成 mcp server 中的 tool。
+
+注意，这个需求将被提供给很多人，你需要与多人竞争，实现最佳方案者可以获得高额的回报。
+
+<biz-requirements>
+
+用户可以将 shell-mcp 作为 mcp server 配置使用，可将单次执行的任意命令，或者需要多轮交互的 console 类命令行工具转化成 MCP Server 供大模型使用。
+
+<level-1-single-command>
+
+可以处理单次执行的命令，将单次执行的命令转化成 mcp server 的 tool。所谓单次执行的命令指该命令预期会在有限时间内停止并返回结果。每次调用是独立的，通常是无状态的。
+
+如：
+- 将 date 命令转化成可用于获取当前时间的 tool
+- 将 shell 脚本转化成计算加法的 tool。
+- 将 ps 命令转化成可获取当前进程列表的工具。
+- 将 base64 包装成 base64 编解码工具。
+- 将 git commit -m 包装成一个提交 git commit 的工具
+
+示例 MCP 配置文件如下：
+<mcp-config>
+{
+  "mcpServers": {
+    "add": {
+      "command": "npx", // or uvx, etc.
+      "args": [
+        "-y",
+        "shell-mcp",
+        "--cmd",
+        "echo $(($OPND1 + $OPND2))",
+        "--name",
+        "add",
+        "--description",
+        "Add two numbers",
+        "--args",
+        "OPND1:int:'The first operand to add'",
+        "OPND2:int:'The second operand to add'"
+      ]
+    }
+    "date": {
+      "command": "npx", // or uvx, etc.
+      "args": [
+        "-y",
+        "shell-mcp",
+        "--cmd",
+        "date"
+      ]
+    }
+  }
+}
+</mcp-config>
+
+也可将多个配置融合进配置文件中。示例 MCP 配置如下：
+<mcp-config>
+{
+  "mcpServers": {
+    "shell-mcp": {
+      "command": "npx", // or uvx, etc.
+      "args": [
+        "-y",
+        "shell-mcp",
+        "--config",
+        "config.json",
+      ]
+    }
+  }
+}
+</mcp-config>
+
+shell-mcp 配置文件如下：
+<config-file>
+{
+    "add": {
+        "cmd": "echo $(($OPND1 + $OPND2))",
+        "args": {
+            "OPND1": {
+                "type": "int",
+                "description": "The first operand to add"
+            },
+            "OPND2": {
+                "type": "int",
+                "description": "The second operand to add"
+            },
+        },
+        "description": "Add two numbers"
+    },
+    "date": {
+        "cmd": "date"
+    }
+}
+</config-file>
+
+
+用户可通过命令行配置指定工具的 name, description, parameters 定义。当用户不指定时则应该自动配置合适的默认值。如前述配置在实际实现中会包装成类似的 mcp tools：
+<tools>
+<tool>
+调用后会返回加法结果。
+
+{
+    "name": "add",
+    "description": "Add two numbers",
+    "arguments": {
+        "OPND1": {
+            "type": "int",
+            "description": "The first operand to add"
+        },
+        "OPND2": {
+            "type": "int",
+            "description": "The second operand to add"
+        }
+    }
+}
+</tool>
+
+<tool>
+调用后会返回当前日期与时间。
+
+{
+    "name": "date",
+    "description": "Run 'date' command",
+    "arguments": {}
+}
+</tool>
+</tools>
+
+
+</level-1-single-command>
+
+<level-2-console-session>
+
+可处理 console 类型的工具，将与某个 console 的会话交互包装成 mcp server。
+
+所谓 console 类型的工具指 REPL (Read-Eval-Print Loop)，每次执行命令可以获取结果，从而形成循环。在 console 中的多次执行通常是共享上下文的，从而可以实现连贯的多个动作。
+
+如：
+- 将 bash 包装成一个可以在目标环境内多次执行 shell 命令并返回结果的 server
+- 将 ipython 包装成一个可以执行任意 python 代码查看效果的 server
+- 将 node 包装成可以执行 node js 代码的 server
+- 将 mysql-cli 包装成可以访问数据库执行任意查询、修改的 server
+- 将 peth https://github.com/lmy375/peth 包装成可以执行各种 EVM 区块链交互的 server
+
+示例 MCP 配置文件如下：
+<mcp-config>
+{
+  "mcpServers": {
+    "python": {
+      "command": "npx", // or uvx, etc.
+      "args": [
+        "-y",
+        "shell-mcp",
+        "--repl",
+        "python",
+      ]
+    }
+    "peth": {
+      "command": "npx", // or uvx, etc.
+      "args": [
+        "-y",
+        "shell-mcp",
+        "--repl",
+        "peth"
+      ]
+    }
+  }
+}
+</mcp-config>
+
+在 REPL 模型下，通常会 server 提供如下 tool，使大模型可以与 console 进行多轮交互，并且顺利的获取每轮交互的结果。
+
+<tools>
+{
+    "start-session": {
+        "description": "Start a REPL session",
+        "arguments": {
+            "args": {
+                "type": "string[]",
+                "optional": true,
+                "description": "Additional arguments to start the session"
+            }
+        }
+    },
+    "send": {
+        "description": "Send command into the session",
+        "arguments": {
+            "command": {
+                "type": "string"
+                "description": "Command to evaluate and execute."
+            }
+        }
+    },
+    "recv": {
+        "description": "Read output from the session",
+        "arguments": {
+            "timeout": {
+                "type": "int",
+                "default": 10,
+                "description": "Timeout in seconds"
+            },
+            "end": {
+                "type": "string",
+                "optional": true,
+                "description": "Read until we found the end mark. eg: \n, END, > , $, "
+            }
+        }
+    },
+    "send-recv": {
+        "description": "Send and receive output in one call",
+        "arguments": {
+            "command": {
+                "type": "string"
+                "description": "Command to evaluate and execute."
+            },
+            "timeout": {
+                "type": "int",
+                "default": 10,
+                "description": "Timeout in seconds"
+            },
+            "end": {
+                "type": "string",
+                "optional": true,
+                "description": "Read until we found the end mark. eg: \n, END, > , >>>, $, "
+            }
+        }
+    },
+    "close-session": {
+        "description": "Stop the REPL session",
+        "arguments": {
+            "args": {
+                "type": "string[]",
+                "optional": true,
+                "description": "Additional arguments to end the session"
+            }
+        }
+    }
+}
+</tools>
+
+
+</level-2-console-session>
+
+<level-3-improvements>
+
+- 文档中的所有需求描述细节（如工具的命名、数据结构的定义、实现的方式）仅供参考，不一定需要完全按照文档描述实现。
+- 根据你的经验对 level-1 和 level-2 中的需求描述进行 review，如果发现不合理或者更好实现方式，可以按照你自己的方式来实现。
+- 除了 level-1 和 level-2 已经描述过的既定需求，根据这个工具的目标用户与实际使用场景，找到前面未描述过的实际需求，以此实现一个新的功能模块。从而为用户提供更多的价值。
+
+</level-3-improvements>
+
+</biz-requirements>
+
+<tech-requirements>
+1. 使用最新的 fastmcp 框架进行开发，不要使用原始的官方 SDK。
+  - 如果使用 typescript 开发，使用 fastmcp npm 包。 https://github.com/punkpeye/fastmcp
+  - 如果使用 python 开发，使用 fastmcp python 包。https://github.com/jlowin/fastmcp
+2. 可以选择 python 或者 node.js 来完成代码编写，最终产出的 MCP Server 需要可以直接通过 npx 或者 uvx 直接运行。如果有更合适、擅长的语言如 golang, rust，也可以自行选择。
+3. 执行命令时，需要考虑超时问题。避免当执行某些命令时耗时过程或者进程卡顿时导致工具调用无法正常结果。
+4. 需要考虑执行命令时的命令注入防护问题。
+   - 避免执行 tool 时通过 &&, ||, ; , | 等导致任意命令执行漏洞
+   - 避免 ../../ 等导致目录穿越漏洞
+   - 避免 > < 等导致任意文件读写问题
+5. REPL 多轮交互过程要正确且完整的获取 STDIO 中的数据（包括 stdout 和 stderr），避免交互时出现数据丢失的情况。
+</tech-requirements>
+
+<coding-guides>
+1. 代码实现时务必进行足够且合适的模块化。
+  - 减少重复的代码，抽象成函数
+  - 具备特定功能的实体抽象为类与对象
+  - 具体特定功能的模块按文件或者目录划分
+  - 合理的目录树结构
+2. 编写 self-documenting 的代码，仅在理解困难的位置保留必要的注释。
+3. 代码中包含完整的日志打印。根据需要划分不同的日志 level 进行打印。
+4. 代码中需要有足够的单元测试与集成测试。最终代码需要保证自动化测试可通过。
+5. 配置正确的 github workflow 实现自动 release 成 npm 或 pip 包。
+6. 编写 docs 介绍项目的主体架构。
+7. 编写 README 介绍项目的安装使用方式。
+</coding-guides>
+
+</requirements>

@@ -1,0 +1,120 @@
+{
+  "add": {
+    "cmd": "echo $(($NUM1 + $NUM2))",
+    "description": "Add two numbers",
+    "args": {
+      "NUM1": {
+        "type": "int",
+        "description": "First operand",
+        "required": true
+      },
+      "NUM2": {
+        "type": "int",
+        "description": "Second operand",
+        "required": true
+      }
+    }
+  },
+  "date": {
+    "cmd": "date",
+    "description": "Get current date and time"
+  },
+  "list_files": {
+    "cmd": "ls -la $DIR",
+    "description": "List files in a directory",
+    "args": {
+      "DIR": {
+        "type": "string",
+        "description": "Directory path",
+        "default": ".",
+        "required": false
+      }
+    }
+  },
+  "count_lines": {
+    "cmd": "wc -l $FILE",
+    "description": "Count lines in a file",
+    "args": {
+      "FILE": {
+        "type": "string",
+        "description": "File path",
+        "required": true
+      }
+    }
+  },
+  "disk_usage": {
+    "cmd": "df -h $PATH",
+    "description": "Show disk usage for a path",
+    "args": {
+      "PATH": {
+        "type": "string",
+        "description": "Path to check",
+        "default": "/",
+        "required": false
+      }
+    }
+  },
+  "process_info": {
+    "cmd": "ps aux | grep $PROCESS",
+    "description": "Find process information",
+    "args": {
+      "PROCESS": {
+        "type": "string",
+        "description": "Process name to search for",
+        "required": true
+      }
+    }
+  },
+  "base64_encode": {
+    "cmd": "echo $TEXT | base64",
+    "description": "Encode text to base64",
+    "args": {
+      "TEXT": {
+        "type": "string",
+        "description": "Text to encode",
+        "required": true
+      }
+    }
+  },
+  "base64_decode": {
+    "cmd": "echo $ENCODED | base64 -d",
+    "description": "Decode base64 text",
+    "args": {
+      "ENCODED": {
+        "type": "string",
+        "description": "Base64 encoded text",
+        "required": true
+      }
+    }
+  },
+  "git_status": {
+    "cmd": "cd $REPO && git status",
+    "description": "Get git repository status",
+    "args": {
+      "REPO": {
+        "type": "string",
+        "description": "Repository path",
+        "default": ".",
+        "required": false
+      }
+    }
+  },
+  "git_log": {
+    "cmd": "cd $REPO && git log --oneline -n $COUNT",
+    "description": "Show git commit history",
+    "args": {
+      "REPO": {
+        "type": "string",
+        "description": "Repository path",
+        "default": ".",
+        "required": false
+      },
+      "COUNT": {
+        "type": "int",
+        "description": "Number of commits to show",
+        "default": 10,
+        "required": false
+      }
+    }
+  }
+}

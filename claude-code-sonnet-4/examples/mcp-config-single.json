@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "add": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "shell-mcp",
+        "--cmd",
+        "echo $(($OPND1 + $OPND2))",
+        "--name",
+        "add",
+        "--description",
+        "Add two numbers",
+        "--args",
+        "OPND1:int:'The first operand to add'",
+        "OPND2:int:'The second operand to add'"
+      ]
+    },
+    "date": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "shell-mcp",
+        "--cmd",
+        "date",
+        "--name",
+        "date",
+        "--description",
+        "Get current date and time"
+      ]
+    }
+  }
+}

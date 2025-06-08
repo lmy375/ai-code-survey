@@ -1,0 +1,80 @@
+{
+  "disk_usage": {
+    "cmd": "df -h $path",
+    "description": "Show disk usage for path",
+    "args": {
+      "path": {
+        "type": "string",
+        "description": "Path to check disk usage",
+        "optional": true,
+        "default": "."
+      }
+    },
+    "timeout": 10000
+  },
+  "memory_usage": {
+    "cmd": "free -h",
+    "description": "Show memory usage",
+    "timeout": 5000
+  },
+  "process_list": {
+    "cmd": "ps aux | head -n $count",
+    "description": "List running processes",
+    "args": {
+      "count": {
+        "type": "int",
+        "description": "Number of processes to show",
+        "optional": true,
+        "default": 20
+      }
+    },
+    "timeout": 10000
+  },
+  "find_files": {
+    "cmd": "find $path -name $pattern -type f",
+    "description": "Find files by pattern",
+    "args": {
+      "path": {
+        "type": "string",
+        "description": "Search path",
+        "optional": true,
+        "default": "."
+      },
+      "pattern": {
+        "type": "string",
+        "description": "File name pattern",
+        "optional": false
+      }
+    },
+    "timeout": 30000
+  },
+  "file_info": {
+    "cmd": "stat $file",
+    "description": "Show file information",
+    "args": {
+      "file": {
+        "type": "string",
+        "description": "File to examine",
+        "optional": false
+      }
+    },
+    "timeout": 5000
+  },
+  "directory_size": {
+    "cmd": "du -sh $path",
+    "description": "Show directory size",
+    "args": {
+      "path": {
+        "type": "string",
+        "description": "Directory path",
+        "optional": false
+      }
+    },
+    "timeout": 30000
+  },
+  "network_connections": {
+    "cmd": "netstat -tuln",
+    "description": "Show network connections",
+    "timeout": 10000
+  }
+}

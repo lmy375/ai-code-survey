@@ -1,0 +1,57 @@
+{
+  "list_files": {
+    "cmd": "ls -la $path",
+    "description": "List files in a directory",
+    "args": {
+      "path": {
+        "type": "string",
+        "description": "Directory path to list",
+        "optional": false,
+        "default": "."
+      }
+    },
+    "timeout": 10000
+  },
+  "echo_message": {
+    "cmd": "echo $message",
+    "description": "Echo a message",
+    "args": {
+      "message": {
+        "type": "string",
+        "description": "Message to echo",
+        "optional": false
+      }
+    },
+    "timeout": 5000
+  },
+  "count_lines": {
+    "cmd": "wc -l $file",
+    "description": "Count lines in a file",
+    "args": {
+      "file": {
+        "type": "string",
+        "description": "File to count lines in",
+        "optional": false
+      }
+    },
+    "timeout": 15000
+  },
+  "ping_host": {
+    "cmd": "ping -c $count $host",
+    "description": "Ping a host",
+    "args": {
+      "host": {
+        "type": "string",
+        "description": "Host to ping",
+        "optional": false
+      },
+      "count": {
+        "type": "int",
+        "description": "Number of pings",
+        "optional": true,
+        "default": 3
+      }
+    },
+    "timeout": 30000
+  }
+}
